@@ -1,0 +1,1 @@
+docker run --rm --name jbwp akhy/jenkins-bitbucket-webhook-proxy

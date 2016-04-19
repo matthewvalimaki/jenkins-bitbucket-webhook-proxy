@@ -1,0 +1,1 @@
+docker build -t akhy/jenkins-bitbucket-webhook-proxy /vagrant/
