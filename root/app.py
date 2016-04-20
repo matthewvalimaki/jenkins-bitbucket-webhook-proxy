@@ -5,6 +5,10 @@ from unirest import post
 
 app = Flask(__name__)
 
+@app.errorhandler(Exception)
+def exception_handler(error):
+    return "!!!!"  + repr(error)
+
 @app.route('/build', methods = ['POST'])
 def build():
   jenkins = request.args.get('jenkins')
@@ -12,15 +16,26 @@ def build():
   jenkins = jenkins[:-1] if jenkins.endswith('/') else jenkins
   job = request.args.get('job')
   token = request.args.get('token', None)
+  dockerfiles = request.args.get('dockerfiles', None)
   query = '' if token is None else 'token=%s' % token
+  
+  if dockerfiles is not None:
+    query += '&dockerfiles=' + dockerfiles
 
   json = request.json
-  git_hash = json['push']['changes'][0]['new']['target']['hash']
-  print git_hash
+
+  if 'push' in json:
+    params = {'git_hash': json['push']['changes'][0]['new']['target']['hash']}
+  else:
+    params = {
+      'git_hash': json['changesets']['values'][0]['toCommit']['displayId'],
+      'slug': json['repository']['slug'],
+      'project_key': json['repository']['project']['key']
+    }
 
   # forward the request
   jenkins_url = '%s/job/%s/buildWithParameters?%s' % (jenkins, job, query)
-  response = post(jenkins_url, params = { 'GIT_HASH': git_hash })
+  response = post(jenkins_url, params = params)
 
   if (response.code in range(400, 500)):
     return "Request error"

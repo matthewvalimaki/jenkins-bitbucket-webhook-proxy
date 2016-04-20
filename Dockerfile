@@ -5,7 +5,9 @@ MAINTAINER Akhyar Amarullah "akhyrul@gmail.com"
 # Add the files
 ADD root /
 
-RUN pip install -r requirements.txt --upgrade && \
+RUN apk upgrade --update && \
+    apk add ca-certificates && \
+    pip install -r requirements.txt --upgrade && \
     addgroup python && \
     adduser -D -g "" -s /bin/sh -G python python
 
