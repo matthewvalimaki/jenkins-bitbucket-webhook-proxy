@@ -1,5 +1,4 @@
 FROM python:2-alpine
-
 MAINTAINER Akhyar Amarullah "akhyrul@gmail.com"
 
 # Add the files
